@@ -102,10 +102,26 @@ target_link_options(${TARGET} PRIVATE
     $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address,leak>
 )
 
+# detect x86
+set(IS_X86 FALSE)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|i[3-6]86")
+    set(IS_X86 TRUE)
+endif()
+
 # Dev_Release
-target_compile_options(${TARGET} PRIVATE
-    $<$<AND:$<CONFIG:Dev_Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-g0;-O2;-mno-avx512f;-mno-avx512bw;-mno-avx512vl>
-)
+if(IS_X86)
+    target_compile_options(${TARGET} PRIVATE
+        $<$<AND:$<CONFIG:Dev_Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+            -g0;-O2;-mno-avx512f;-mno-avx512bw;-mno-avx512vl
+        >
+    )
+else()
+    target_compile_options(${TARGET} PRIVATE
+        $<$<AND:$<CONFIG:Dev_Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+            -g0;-O2
+        >
+    )
+endif()
 
 # Release
 target_compile_options(${TARGET} PRIVATE
