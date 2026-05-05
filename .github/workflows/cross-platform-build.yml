@@ -1,4 +1,4 @@
-name: Build
+name: Cross-platform build
 
 on:
   push:
@@ -96,6 +96,12 @@ jobs:
 
   macos:
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: aarch64
+            cmake_arch: arm64
 
     steps:
       - uses: actions/checkout@v4
@@ -104,7 +110,7 @@ jobs:
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Dev_Release \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.cmake_arch }} \
             -S ${{ github.workspace }}
 
       - name: Build
@@ -116,33 +122,33 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vmaware-macos-aarch64
+          name: vmaware-macos-${{ matrix.arch }}
           path: build/vmaware
           if-no-files-found: error
           retention-days: 30
 
-  windows-64-debug:
+  windows:
     runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: cmd.exe /c .github\workflows\build_run_win_64_debug.bat
-      - name: Rename binary with commit info
-        shell: pwsh
-        run: |
-          $shortSha = "${{ github.sha }}".Substring(0,12)
-          $run = "${{ github.run_number }}"
-          Add-Content $env:GITHUB_ENV "SHORT_SHA=$shortSha"
-          Rename-Item build\Release\vmaware.exe "vmaware_${run}_${shortSha}.exe"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: vmaware64_debug.exe
-          path: build\Release\vmaware_${{ github.run_number }}_${{ env.SHORT_SHA }}.exe
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - config: 64-debug
+            bat: build_run_win_64_debug.bat
+            artifact: vmaware64_debug.exe
+          - config: 32-debug
+            bat: build_run_win_32_debug.bat
+            artifact: vmaware32_debug.exe
+          - config: 32-release
+            bat: build_run_win_32_release.bat
+            artifact: vmaware32_release.exe
+          - config: 64-release
+            bat: build_run_win_64_release.bat
+            artifact: vmaware64_release.exe
 
-  windows-32-debug:
-    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cmd.exe /c .github\workflows\build_run_win_32_debug.bat
+      - run: cmd.exe /c .github\workflows\${{ matrix.bat }}
       - name: Rename binary with commit info
         shell: pwsh
         run: |
@@ -152,45 +158,11 @@ jobs:
           Rename-Item build\Release\vmaware.exe "vmaware_${run}_${shortSha}.exe"
       - uses: actions/upload-artifact@v4
         with:
-          name: vmaware32_debug.exe
-          path: build\Release\vmaware_${{ github.run_number }}_${{ env.SHORT_SHA }}.exe
-
-  windows-32-release:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: cmd.exe /c .github\workflows\build_run_win_32_release.bat
-      - name: Rename binary with commit info
-        shell: pwsh
-        run: |
-          $shortSha = "${{ github.sha }}".Substring(0,12)
-          $run = "${{ github.run_number }}"
-          Add-Content $env:GITHUB_ENV "SHORT_SHA=$shortSha"
-          Rename-Item build\Release\vmaware.exe "vmaware_${run}_${shortSha}.exe"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: vmaware32_release.exe
-          path: build\Release\vmaware_${{ github.run_number }}_${{ env.SHORT_SHA }}.exe
-
-  windows-64-release:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: cmd.exe /c .github\workflows\build_run_win_64_release.bat
-      - name: Rename binary with commit info
-        shell: pwsh
-        run: |
-          $shortSha = "${{ github.sha }}".Substring(0,12)
-          $run = "${{ github.run_number }}"
-          Add-Content $env:GITHUB_ENV "SHORT_SHA=$shortSha"
-          Rename-Item build\Release\vmaware.exe "vmaware_${run}_${shortSha}.exe"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: vmaware64_release.exe
+          name: ${{ matrix.artifact }}
           path: build\Release\vmaware_${{ github.run_number }}_${{ env.SHORT_SHA }}.exe
 
   all-platforms:
-    needs: [linux, macos, windows-64-debug, windows-32-debug, windows-32-release, windows-64-release]
+    needs: [linux, macos, windows]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All platforms built successfully"
