@@ -4,7 +4,7 @@
  * ██║   ██║██╔████╔██║███████║██║ █╗ ██║███████║██████╔╝█████╗
  * ╚██╗ ██╔╝██║╚██╔╝██║██╔══██║██║███╗██║██╔══██║██╔══██╗██╔══╝
  *  ╚████╔╝ ██║ ╚═╝ ██║██║  ██║╚███╔███╔╝██║  ██║██║  ██║███████╗
- *   ╚═══╝  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ Experimental post-2.7.0 (April 2026)
+ *   ╚═══╝  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ Experimental post-2.7.0 (May 2026)
  *
  *  C++ VM detection library
  *
@@ -54,14 +54,14 @@
  *
  *
  * ============================== SECTIONS ==================================
- * - enums for publicly accessible techniques  => line 557
- * - struct for internal cpu operations        => line 807
- * - struct for internal memoization           => line 3117
- * - struct for internal utility functions     => line 3324
- * - struct for internal core components       => line 12083
- * - start of VM detection technique list      => line 4800
- * - start of public VM detection functions    => line 12448
- * - start of externally defined variables     => line 13237
+ * - enums for publicly accessible techniques  => line 564
+ * - struct for internal cpu operations        => line 818
+ * - struct for internal memoization           => line 3132
+ * - struct for internal utility functions     => line 3339
+ * - struct for internal core components       => line 12993
+ * - start of VM detection technique list      => line 4820
+ * - start of public VM detection functions    => line 13359
+ * - start of externally defined variables     => line 14166
  *
  *
  * ============================== EXAMPLE ===================================
@@ -533,6 +533,7 @@ namespace brands { // TODO, remove this in the 2.8.0 or any release after the 2.
     LEGACY(COMPAQ, "Compaq FX!32");
     LEGACY(INSIGNIA, "Insignia RealPC");
     LEGACY(CONNECTIX, "Connectix Virtual PC");
+    LEGACY(CONTAINERD, "Containerd");
 }
 
 
@@ -638,6 +639,7 @@ public:
         BLUESTACKS_FOLDERS,
         AMD_SEV_MSR,
         TEMPERATURE,
+        CGROUP,
         PROCESSES,
 
         // Linux and MacOS
@@ -746,6 +748,7 @@ public:
         COMPAQ,
         INSIGNIA,
         CONNECTIX,
+        CONTAINERD,
         NULL_BRAND // do not modify the placement for this, as it's used to count the number of brands here
     };
 
@@ -4530,6 +4533,7 @@ public:
         static constexpr const char* COMPAQ = "Compaq FX!32";
         static constexpr const char* INSIGNIA = "Insignia RealPC";
         static constexpr const char* CONNECTIX = "Connectix Virtual PC";
+        static constexpr const char* CONTAINERD = "Containerd";
 
         static brand_list_t brand_list(const flagset& flags) {
             if (memo::brand_list::is_cached()) {
@@ -4760,6 +4764,7 @@ public:
                 case brand_enum::COMPAQ: return VM::brands::COMPAQ;
                 case brand_enum::INSIGNIA: return VM::brands::INSIGNIA;
                 case brand_enum::CONNECTIX: return VM::brands::CONNECTIX;
+                case brand_enum::CONTAINERD: return VM::brands::CONTAINERD;
                 case brand_enum::NULL_BRAND: return VM::brands::NULL_BRAND; // do not modify placement of this, it's used as an anchor point to count the number of brands
             }
 
@@ -6963,6 +6968,74 @@ public:
     [[nodiscard]] static bool temperature() {
         if (util::exists("/sys/class/thermal/cooling_device0")) return false;
         return (!util::exists("/sys/class/thermal/thermal_zone0/"));
+    }
+
+
+    /**
+     * @brief Check for cgroup paths in /proc/self/cgroup
+     * @category Linux
+     * @implements VM::CGROUP
+     */
+    [[nodiscard]] static bool cgroup() {
+        const std::string contents = util::read_file("/proc/self/cgroup");
+        
+        if (contents.empty()) {
+            return false;
+        }
+
+        if (contents.find("docker") != std::string::npos) {
+            return core::add(brand_enum::DOCKER);
+        }
+
+        if (contents.find("containerd") != std::string::npos) {
+            return core::add(brand_enum::CONTAINERD);
+        }
+
+        // look for a 64-char lowercase hex segment in any path component (cgroup v1)
+        for (size_t i = 0; i + 64 <= contents.size(); i++) {
+            bool hex_run = true;
+
+            for (size_t j = i; j < i + 64; j++) {
+                const char c = contents.at(j);
+
+                if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
+                    hex_run = false;
+                    break;
+                }
+            }
+
+            if (hex_run) {
+                char after = '\0';
+
+                if (i + 64 < contents.size()) {
+                    after = contents.at(i + 64);
+                }
+
+                if (after == '\n' || after == '/' || after == '\0') {
+                    return core::add(brand_enum::DOCKER);
+                }
+            }
+        }
+
+        // cgroup v2 with cgroup namespace isolation: Docker isolates the cgroup namespace
+        // so the unified hierarchy line appears as "0::/" (container sees itself as root)
+        size_t pos = 0;
+
+        while (pos < contents.size()) {
+            size_t end = contents.find('\n', pos);
+            std::string line = contents.substr(pos, end == std::string::npos ? end : end - pos);
+            pos = (end == std::string::npos) ? contents.size() : end + 1;
+
+            while (!line.empty() && (line.back() == '\r' || line.back() == ' ')) {
+                line.pop_back();
+            }
+
+            if (line == "0::/") {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -13632,6 +13705,7 @@ public: // START OF PUBLIC FUNCTIONS
             case HYPERVISOR_HOOK: return "BREAKPOINT";
             case POPF: return "POPF";
             case EIP_OVERFLOW: return "EIP_OVERFLOW";
+            case CGROUP: return "CGROUP";
             // END OF TECHNIQUE LIST
             case DEFAULT: return "DEFAULT"; 
             case ALL: return "ALL"; 
@@ -13819,6 +13893,7 @@ public: // START OF PUBLIC FUNCTIONS
             case brand_enum::DOCKER: return "Container";
             case brand_enum::PODMAN: return "Container";
             case brand_enum::OPENVZ: return "Container";
+            case brand_enum::CONTAINERD: return "Container";
             case brand_enum::LMHS: return "Hypervisor (unknown type)";
             case brand_enum::WINE: return "Compatibility layer";
             case brand_enum::INTEL_TDX: return "Trusted Domain";
@@ -14241,6 +14316,7 @@ std::array<VM::core::technique, VM::enum_size + 1> VM::core::technique_table = [
             {VM::BLUESTACKS_FOLDERS, {5, VM::bluestacks}},
             {VM::AMD_SEV_MSR, {50, VM::amd_sev_msr}},
             {VM::TEMPERATURE, {20, VM::temperature}},
+            {VM::CGROUP, {70, VM::cgroup}},
             {VM::PROCESSES, {40, VM::processes}},
         #endif    
 

@@ -580,12 +580,12 @@ static const char* get_vm_description(const std::string& vm_brand) {
         return "";
     }
 
-    struct BrandEntry {
+    struct brand_entry {
         const char* brand;
         const char* description;
     };
 
-    static const BrandEntry table[] = {
+    static const brand_entry table[] = {
         { VM::brands::VBOX, "Oracle VirtualBox (formerly Sun VirtualBox, Sun xVM VirtualBox and InnoTek VirtualBox) is a free and commercial hosted hypervisor for x86 and Apple ARM64 virtualization developed by Oracle Corporation initially released in 2007. It supports Intel's VT-x and AMD's AMD-V hardware-assisted virtualization, while providing an extensive feature set as a staple of its flexibility and wide use cases." },
         { VM::brands::VMWARE, "VMware is a free and commercial type 2 hypervisor initially released in 1999 and acquired by EMC, then Dell, and finally Broadcom Inc in 2023. It was the first commercially successful company to virtualize the x86 architecture, and has since produced many sub-versions of the hypervisor since its inception. It uses binary translation to re-write the code dynamically for a faster performance." },
         { VM::brands::VMWARE_EXPRESS, "VMware Express (formerly VMware GSX Server Express) was a free entry-level version of VMware's hosted hypervisor for small-scale virtualization. Released in 2003, it offered basic VM management capabilities but lacked advanced features like VMotion. Discontinued in 2006 as VMware shifted focus to enterprise solutions like ESX and vSphere." },
@@ -656,6 +656,7 @@ static const char* get_vm_description(const std::string& vm_brand) {
         { VM::brands::COMPAQ, "Compaq FX!32 is an emulator that is designed to run Win32 programs for the DEC instruction set architecture. Released in 1996, it was developed by developed by Digital Equipment Corporation (DEC) to support their Alpha microprocessors. It analyzed the way programs worked and, after the program ran, used binary translation to produce dynamic-link library (DLL) files of native Alpha code that the application could execute the next time it ran." },
         { VM::brands::INSIGNIA, "RealPC was an emulator for the Macintosh line of PCs. It emulated a Pentium-based PC to run Windows NT, Windows 95, and Windows 98 programs. It was discontinued in 2003." },
         { VM::brands::CONNECTIX, "Connectix VirtualPC was the predecessor to Microsoft's VirtualPC. Originally developed as a Macintosh application for System 7.5 and released by Connectix in June 1997, it supported various OS's such as Linux and old versions of Windows. It was bought by Microsoft in February 2003." },
+        { VM::brands::CONTAINERD, "Containerd is an industry-standard container runtime used as the core engine beneath Docker, Kubernetes, and other container platforms. It manages the complete container lifecycle including image transfer, storage, execution, and supervision." },
         { VM::brands::NULL_BRAND, "Indicates no detectable virtualization brand. This result may occur on bare-metal systems, unsupported/obscure hypervisors, or when anti-detection techniques (e.g., VM escaping) are employed by the guest environment." }
     };
 
@@ -1002,6 +1003,7 @@ static void general(
     checker(VM::HYPERVISOR_HOOK, "EPT/NPT hooking");
     checker(VM::POPF, "popf behavior");
     checker(VM::EIP_OVERFLOW, "instructions in compat mode");
+    checker(VM::CGROUP, "cgroup namespace");
 
     // ADD NEW TECHNIQUE CHECKER HERE
 
