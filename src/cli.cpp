@@ -1,49 +1,49 @@
 /**
  * ██╗   ██╗███╗   ███╗ █████╗ ██╗    ██╗ █████╗ ██████╗ ███████╗
  * ██║   ██║████╗ ████║██╔══██╗██║    ██║██╔══██╗██╔══██╗██╔════╝
- * ██║   ██║██╔████╔██║███████║██║ █╗ ██║███████║██████╔╝█████╗
- * ╚██╗ ██╔╝██║╚██╔╝██║██╔══██║██║███╗██║██╔══██║██╔══██╗██╔══╝
+ * ██║   ██║██╔████╔██║███████║██║ █╗ ██║███████║██████╔╝█████╗  
+ * ╚██╗ ██╔╝██║╚██╔╝██║██╔══██║██║███╗██║██╔══██║██╔══██╗██╔══╝  
  *  ╚████╔╝ ██║ ╚═╝ ██║██║  ██║╚███╔███╔╝██║  ██║██║  ██║███████╗
  *   ╚═══╝  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
- *
+ * 
  *  C++ VM detection library
- *
+ * 
  * ===============================================================
  *
- *  This is the main CLI code, which demonstrates the majority
+ *  This is the main CLI code, which demonstrates the majority 
  *  of the library's capabilities while also providing as a
  *  practical and general VM detection tool for everybody to use
- *
+ * 
  * ===============================================================
- *
+ * 
  *  - Made by: @kernelwernel (https://github.com/kernelwernel)
  *  - Co-developed by: Requiem (https://github.com/NotRequiem)
  *  - Repository: https://github.com/kernelwernel/VMAware
  *  - License: MIT
- */
+ */ 
 
 #include <vector>
 #include <chrono>
 
 #if (defined(__GNUC__) || defined(__linux__))
-#define CLI_LINUX 1
+    #define CLI_LINUX 1
 #else
-#define CLI_LINUX 0
+    #define CLI_LINUX 0
 #endif
 
 #if (defined(__APPLE__) || defined(__APPLE_CPP__) || defined(__MACH__) || defined(__DARWIN))
-#define CLI_APPLE 1
-#include <mach-o/dyld.h>
+    #define CLI_APPLE 1
+    #include <mach-o/dyld.h>
 #else
-#define CLI_APPLE 0
+    #define CLI_APPLE 0
 #endif
 
 #if (defined(_MSC_VER) || defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__))
-#define CLI_WINDOWS 1
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
+    #define CLI_WINDOWS 1
+    #define WIN32_LEAN_AND_MEAN
+    #define NOMINMAX
 #else
-#define CLI_WINDOWS 0
+    #define CLI_WINDOWS 0
 #endif
 
 #include "vmaware.hpp"
@@ -54,14 +54,14 @@ constexpr const char* date = "April 2026";
 std::string bold = "\033[1m";
 std::string underline = "\033[4m";
 std::string ansi_exit = "\x1B[0m";
-std::string red = "\x1B[38;2;239;75;75m";
+std::string red = "\x1B[38;2;239;75;75m"; 
 std::string orange = "\x1B[38;2;255;180;5m";
 std::string green = "\x1B[38;2;94;214;114m";
 std::string red_orange = "\x1B[38;2;247;127;40m";
 std::string green_orange = "\x1B[38;2;174;197;59m";
 std::string grey = "\x1B[38;2;108;108;108m";
 
-using u8 = std::uint8_t;
+using u8  = std::uint8_t;
 using u16 = std::uint16_t;
 using u32 = std::uint32_t;
 using u64 = std::uint64_t;
@@ -104,7 +104,7 @@ std::string detected = ("[  " + green + "DETECTED" + ansi_exit + "  ]");
 std::string not_detected = ("[" + red + "NOT DETECTED" + ansi_exit + "]");
 std::string no_support = ("[ " + grey + "NO SUPPORT" + ansi_exit + " ]");
 std::string no_perms = ("[" + grey + "  NO PERMS  " + ansi_exit + "]");
-std::string note = ("[    NOTE    ]");
+std::string note = ("[    NOTE    ]");               
 std::string disabled = ("[" + grey + "  DISABLED  " + ansi_exit + "]");
 
 #if (CLI_WINDOWS)
@@ -324,8 +324,8 @@ static std::string compute_self_sha256() {
 #endif
 
 [[noreturn]] static void help(void) {
-    std::cout <<
-        R"(Usage: 
+    std::cout << 
+R"(Usage: 
  vmaware [option] [extra]
  (do not run with any options if you want the full summary)
 
@@ -359,14 +359,14 @@ Extra:
 
 [[noreturn]] static void version(void) {
     std::cout << "vmaware " << "v" << ver << " (" << date << ")\n\n" <<
-        "Derived project of VMAware library at https://github.com/kernelwernel/VMAware\n"
-        "License MIT:<https://opensource.org/license/mit>.\n" <<
-        "This is free software: you are free to change and redistribute it.\n" <<
-        "There is NO WARRANTY, to the extent permitted by law.\n" <<
+    "Derived project of VMAware library at https://github.com/kernelwernel/VMAware\n"
+    "License MIT:<https://opensource.org/license/mit>.\n" << 
+    "This is free software: you are free to change and redistribute it.\n" <<
+    "There is NO WARRANTY, to the extent permitted by law.\n" <<
 
-        "Developed and maintained by kernelwernel and Requiem,\n" <<
-        "see https://github.com/kernelwernel and https://github.com/NotRequiem\n" <<
-        "For any inquiries, contact us on Discord at shenzken or kr.nl, or email us at jeanruyv@gmail.com\n";
+    "Developed and maintained by kernelwernel and Requiem,\n" << 
+    "see https://github.com/kernelwernel and https://github.com/NotRequiem\n" <<
+    "For any inquiries, contact us on Discord at shenzken or kr.nl, or email us at jeanruyv@gmail.com\n";
     std::exit(0);
 }
 
@@ -380,20 +380,18 @@ static const char* color(const u8 score, const bool is_hardened) {
     }
 
     if (arg_bitset.test(DYNAMIC)) {
-        if (score == 0) { return red.c_str(); }
-        else if (score <= 12) { return red.c_str(); }
-        else if (score <= 25) { return red_orange.c_str(); }
-        else if (score < 50) { return red_orange.c_str(); }
-        else if (score <= 62) { return orange.c_str(); }
-        else if (score <= 75) { return green_orange.c_str(); }
-        else if (score < 100) { return green.c_str(); }
+        if      (score == 0)   { return red.c_str(); }
+        else if (score <= 12)  { return red.c_str(); }
+        else if (score <= 25)  { return red_orange.c_str(); }
+        else if (score < 50)   { return red_orange.c_str(); }
+        else if (score <= 62)  { return orange.c_str(); }
+        else if (score <= 75)  { return green_orange.c_str(); }
+        else if (score < 100)  { return green.c_str(); }
         else if (score == 100) { return green.c_str(); }
-    }
-    else {
+    } else {
         if (score == 100) {
             return green.c_str();
-        }
-        else {
+        } else {
             return red.c_str();
         }
     }
@@ -402,7 +400,7 @@ static const char* color(const u8 score, const bool is_hardened) {
 }
 
 [[noreturn]] static void brand_list() {
-    std::cout <<
+    std::cout << 
         R"(VirtualBox
         VMware
         VMware Express
@@ -481,13 +479,13 @@ static const char* color(const u8 score, const bool is_hardened) {
 
 static bool is_admin() {
 #if (CLI_LINUX)
-    const uid_t uid = getuid();
+    const uid_t uid  = getuid();
     const uid_t euid = geteuid();
 
     const bool is_root = (
-        (uid != euid) ||
+        (uid != euid) || 
         (euid == 0)
-        );
+    );
 
     return is_root;
 #elif (WINDOWS)
@@ -518,7 +516,7 @@ static bool are_perms_required(const VM::enum_flags flag) {
     case VM::DMESG:
     case VM::QEMU_USB:
     case VM::KMSG:
-    case VM::SMBIOS_VM_BIT:
+    case VM::SMBIOS_VM_BIT: 
     case VM::NVRAM: return true;
     default: return false;
     }
@@ -538,32 +536,32 @@ static bool is_unsupported(VM::enum_flags flag) {
     if (
         (flag >= VM::HYPERVISOR_BIT) &&
         (flag <= VM::KGT_SIGNATURE)
-        ) {
+    ) {
         return false;
     }
 
-#if (CLI_LINUX)
-    return (
-        (flag >= VM::LINUX_START) &&
-        (flag <= VM::LINUX_END)
+    #if (CLI_LINUX)
+        return (
+            (flag >= VM::LINUX_START) &&
+            (flag <= VM::LINUX_END)
         );
-#elif (CLI_WINDOWS)
-    return (
-        (flag >= VM::WINDOWS_START) &&
-        (flag <= VM::WINDOWS_END)
+    #elif (CLI_WINDOWS)
+        return (
+            (flag >= VM::WINDOWS_START) &&
+            (flag <= VM::WINDOWS_END)
         );
-#elif (APPLE)
-    return (
-        (flag >= VM::MACOS_START) &&
-        (flag <= VM::MACOS_END)
+    #elif (APPLE)
+        return (
+            (flag >= VM::MACOS_START) &&
+            (flag <= VM::MACOS_END)
         );
-#else
-    return true;
-#endif
+    #else
+        return true;
+    #endif
 }
 
 // just a simple string replacer
-static void replace(std::string& text, const std::string& original, const std::string& new_brand) {
+static void replace(std::string &text, const std::string &original, const std::string &new_brand) {
     size_t start_pos = 0;
     while ((start_pos = text.find(original, start_pos)) != std::string::npos) {
         text.replace(start_pos, original.length(), new_brand);
@@ -736,7 +734,7 @@ static const char* get_vm_description(const std::string& vm_brand) {
     using RtlInitUnicodeString_t = VOID(__stdcall*)(PUNICODE_STRING, PCWSTR);
 
 #pragma warning(push)
-#pragma warning(disable:4191)
+    #pragma warning(disable:4191)
     auto pRtlInitUnicodeString = reinterpret_cast<RtlInitUnicodeString_t>(
         GetProcAddress(ntdll, "RtlInitUnicodeString"));
     auto pNtCreateFile = reinterpret_cast<NtCreateFile_t>(
@@ -803,8 +801,7 @@ static void checker(const VM::enum_flags flag, const char* message) {
 
     if (is_unsupported(flag)) {
         unsupported_count++;
-    }
-    else {
+    } else {
         supported_count++;
     }
 
@@ -829,8 +826,7 @@ static void checker(const VM::enum_flags flag, const char* message) {
 
     if (result) {
         std::cout << detected << bold << " Checking " << message << "..." << enum_name << ansi_exit << "\n";
-    }
-    else {
+    } else {
         std::cout << not_detected << " Checking " << message << "..." << enum_name << ansi_exit << "\n";
     }
 }
@@ -842,8 +838,7 @@ static void checker(const std::function<bool()>& func, const char* message) {
 #if (!CLI_WINDOWS)
     if (arg_bitset.test(VERBOSE)) {
         unsupported_count++;
-    }
-    else {
+    } else {
         supported_count++;
     }
 #else
@@ -861,8 +856,8 @@ static void checker(const std::function<bool()>& func, const char* message) {
         (result ? bold : "") <<
         " Checking " <<
         message <<
-        "..." <<
-        (result ? ansi_exit : "") <<
+        "..." << 
+        (result ? ansi_exit : "") << 
         "\n";
 
 }
@@ -874,24 +869,24 @@ const bool is_anyrun = (is_anyrun_directory || is_anyrun_driver);
 
 
 static void general(
-    const VM::enum_flags high_threshold,
+    const VM::enum_flags high_threshold, 
     const VM::enum_flags all,
     const VM::enum_flags dynamic
 ) {
     bool notes_enabled = false;
-
+   
     if (arg_bitset.test(NO_ANSI)) {
         detected = ("[  DETECTED  ]");
         not_detected = ("[NOT DETECTED]");
         no_support = ("[ NO SUPPORT ]");
         no_perms = ("[  NO PERMS  ]");
-        note = ("[    NOTE    ]");
+        note = ("[    NOTE    ]");               
         disabled = ("[  DISABLED  ]");
-
+        
         bold = "";
         underline = "";
         ansi_exit = "";
-        red = "";
+        red = ""; 
         orange = "";
         green = "";
         red_orange = "";
@@ -901,20 +896,19 @@ static void general(
 
     if (arg_bitset.test(NOTES)) {
         notes_enabled = false;
-    }
-    else {
+    } else {
         notes_enabled = true;
     }
 
-#if (CLI_LINUX)
-    if (notes_enabled && !is_admin()) {
-        std::cout << note << " Running under root might give better results\n";
-    }
-#elif (CLI_WINDOWS)
-    if (!is_admin()) {
-        std::cout << note << " Not running as admin, some technique may not run\n";
-    }
-#endif
+    #if (CLI_LINUX)
+        if (notes_enabled && !is_admin()) {
+            std::cout << note << " Running under root might give better results\n";
+        }
+    #elif (CLI_WINDOWS)
+        if (!is_admin()) {
+            std::cout << note << " Not running as admin, some technique may not run\n";
+        }
+    #endif
 
     const auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -994,7 +988,7 @@ static void general(
     checker(VM::ACPI_SIGNATURE, "ACPI device signatures");
     checker(VM::TRAP, "hypervisor interception");
     checker(VM::UD, "undefined exceptions");
-    checker(VM::INTERRUPT_SHADOW, "interrupt shadows");
+    checker(VM::BLOCKSTEP, "single step with trap flag");
     checker(VM::DBVM, "DBVM hypervisor");
     checker(VM::BOOT_LOGO, "boot logo");
     checker(VM::MAC_SYS, "system profiler");
@@ -1027,9 +1021,9 @@ static void general(
         }
 
         const bool is_red = (
-            (brand == VM::brands::NULL_BRAND) ||
+            (brand == VM::brands::NULL_BRAND) || 
             (brand == VM::brands::HYPERV_ROOT)
-            );
+        );
 
         std::cout << bold << "VM brand: " << ansi_exit << (is_red ? red : green) << brand << ansi_exit << "\n";
     }
@@ -1047,8 +1041,7 @@ static void general(
 
             if (type == "Unknown" || type == "Host machine") {
                 current_color = red;
-            }
-            else {
+            } else {
                 current_color = green;
             }
 
@@ -1110,8 +1103,7 @@ static void general(
 
         if (vm.is_hardened) {
             std::cout << green << "likely" << ansi_exit << "\n";
-        }
-        else {
+        } else {
             std::cout << grey << "unlikely" << ansi_exit << "\n";
         }
     }
@@ -1135,12 +1127,12 @@ static void general(
 
     // sha256 output (debug)
     {
-#ifdef __VMAWARE_DEBUG__
-        const std::string hash = compute_self_sha256();
-        if (!hash.empty()) {
-            std::cout << "SHA256: " << hash << '\n';
-        }
-#endif
+        #ifdef __VMAWARE_DEBUG__
+            const std::string hash = compute_self_sha256();
+            if (!hash.empty()) {
+                std::cout << "SHA256: " << hash << '\n';
+            }
+        #endif
     }
 
 
@@ -1157,7 +1149,7 @@ static void general(
                 // it harder to read. Kinda like how this comment you're reading is
                 // structured by breaking the lines in a clean and organised way. 
                 const u8 max_line_length = 60;
-
+                
                 std::vector<std::string> divided_description;
 
                 std::istringstream stream(description);
@@ -1175,13 +1167,11 @@ static void general(
 
                     if (char_count <= 60) {
                         continue;
-                    }
-                    else {
+                    } else {
                         if ((static_cast<unsigned long long>(char_count) - 1) >= (static_cast<unsigned long long>(max_line_length) + 3)) {
                             it = divided_description.insert(it + 1, "\n");
                             char_count = it->length() + 1;
-                        }
-                        else {
+                        } else {
                             continue;
                         }
                     }
@@ -1225,11 +1215,11 @@ static void general(
     // finishing touches with notes
     if (notes_enabled) {
         if (vm.detected_count != 0) {
-            std::cout <<
-                note <<
+            std::cout << 
+                note << 
                 " If you found a false positive, please make sure to create\n \
               an issue at https://github.com/kernelwernel/VMAware/issues\n\n";
-            // ^ do not modify the space above
+        // ^ do not modify the space above
         }
     }
 
@@ -1317,7 +1307,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    static constexpr std::array<std::pair<const char*, arg_enum>, 32> table{ {
+    static constexpr std::array<std::pair<const char*, arg_enum>, 32> table {{
         { "-h", HELP },
         { "-v", VERSION },
         { "-a", ALL },
@@ -1350,7 +1340,7 @@ int main(int argc, char* argv[]) {
         { "--no-ansi", NO_ANSI },
         { "--detected-only", DETECTED_ONLY },
         { "--json", JSON }
-    } };
+    }};
 
     std::string potential_null_arg = "";
     const char* potential_output_arg = "results.json";
@@ -1360,7 +1350,7 @@ int main(int argc, char* argv[]) {
 
         auto it = std::find_if(table.cbegin(), table.cend(), [&](const std::pair<const char*, i32>& p) {
             return (std::strcmp(p.first, arg_string) == 0);
-            });
+        });
 
         if (it == table.end()) {
             if (arg_bitset.test(OUTPUT)) {
@@ -1369,13 +1359,11 @@ int main(int argc, char* argv[]) {
                     potential_output_arg = arg_string;
                 }
                 arg_bitset.set(OUTPUT, false);
-            }
-            else {
+            } else {
                 arg_bitset.set(NULL_ARG);
                 potential_null_arg = arg_string;
             }
-        }
-        else {
+        } else {
             arg_bitset.set(it->second);
         }
     }
@@ -1389,7 +1377,7 @@ int main(int argc, char* argv[]) {
 
     if (arg_bitset.test(HELP)) {
         help();
-    }
+    } 
 
     if (arg_bitset.test(VERSION)) {
         version();
@@ -1417,7 +1405,7 @@ int main(int argc, char* argv[]) {
         static_cast<u32>(arg_bitset.test(BRAND)) +
         static_cast<u32>(arg_bitset.test(TYPE)) +
         static_cast<u32>(arg_bitset.test(CONCLUSION))
-        );
+    );
 
     const VM::enum_flags high_threshold = (arg_bitset.test(HIGH_THRESHOLD) ? VM::HIGH_THRESHOLD : VM::NULL_ARG);
     const VM::enum_flags all = (arg_bitset.test(ALL) ? VM::ALL : VM::NULL_ARG);
@@ -1447,7 +1435,7 @@ int main(int argc, char* argv[]) {
 
         if (arg_bitset.test(BRAND)) {
             std::string brand = VM::brand(VM::MULTIPLE, high_threshold, all, dynamic);
-
+            
             if (is_anyrun && (brand == VM::brands::NULL_BRAND)) {
                 brand = "ANY.RUN";
             }
